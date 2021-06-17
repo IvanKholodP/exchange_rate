@@ -1,9 +1,12 @@
-async function updateRate() {
-	const response = await fetch('https://www.nbrb.by/api/exrates/rates?periodicity=0');
-	const data = await response.json();
-	const rate = data.map(item => item);
-
-	rate.forEach((item) => {
+async function getRete() {
+	const updateRete = async()=> {
+		const url = 'https://www.nbrb.by/api/exrates/rates?periodicity=0';
+		const response = await fetch(url);
+		const data = await response.json();
+		return data.map(item => item);
+	}
+	const rate = await updateRete();
+	const rateTable = rate.forEach((item) => {
 		const table = document.querySelector('.table');
 		table.insertAdjacentHTML('beforeend', `
 				<tr>
@@ -12,9 +15,10 @@ async function updateRate() {
 					<td>${item.Cur_OfficialRate}</td>
 				</tr>`)
 	});
+	setInterval(()=> updateRete(), 1000 * 10);
 };
 
-updateRate();
+getRete();
 
 const time = document.getElementById('time');
 
@@ -24,12 +28,11 @@ function updateTime() {
 		month: "long",
 		day: "numeric",
 		hour: "numeric",
-		minute: "numeric"
+		minute: "numeric",
+		second: "numeric"
 	};
-	return new Date().toLocaleDateString('ru-RU', options)
+	return new Date().toLocaleDateString('ru-RU', options);
 };
 time.innerHTML = updateTime();
 
-setInterval(
-	() => time.innerHTML = updateTime(), 1000 * 60
-);
+setInterval(() => time.innerHTML = updateTime(), 1000);
